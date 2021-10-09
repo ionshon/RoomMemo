@@ -21,6 +21,7 @@ import com.inu.roommemo.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,21 +56,24 @@ class MainActivity : AppCompatActivity() {
             .build()
         musicDAO = helper.roomMusicDao()
         musicAdapter = MusicAdapter(musicLists)
-        setTitle("곡수 : $i")
 
         insertMusicList()
-        Log.d("코루틴 빡 : ", "$i")
+        setTitle("곡수 : $i")
         CoroutineScope(Dispatchers.IO).launch {
-         //   CoroutineScope(Dispatchers.IO).launch {
-                musicAdapter.musicList.clear()
-                musicAdapter.musicList.addAll(musicDAO.getAll())
-        }
-  //      musicAdapter.notifyDataSetChanged()
+            musicAdapter.musicList.clear()
+            musicAdapter.musicList.addAll(musicDAO.getAll())
 
-        with(binding) {
-            recyclerMemo.adapter = musicAdapter
-            recyclerMemo.layoutManager = LinearLayoutManager(this@MainActivity)
+            withContext(Dispatchers.Main) { // 화면을 갱신할 때만 메인 쓰레드를 실행해
+            //    musicAdapter.notifyDataSetChanged()
+                with(binding) {
+                    Log.d("코루틴 빡 : ", "$i")
+                    recyclerMemo.adapter = musicAdapter
+                    recyclerMemo.layoutManager = LinearLayoutManager(this@MainActivity)
+                }
+            }
         }
+ //       musicAdapter.notifyDataSetChanged()
+
     }
 
     fun insertMusicList() {
