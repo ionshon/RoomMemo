@@ -2,6 +2,7 @@ package com.inu.roommemo.adapter
 
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -46,11 +47,15 @@ class MusicAdapter(val musicList: MutableList<RoomMusic>) : // (private val onCl
             }
         }
         fun setMusic(music:RoomMusic) {
-            binding.imageAlbum.setImageURI(music.getAlbumUri())
-            binding.texArtist.text = music.artist
-            binding.textTitle.text = music.title
-            val sdf = SimpleDateFormat("mm:ss")
-            binding.textDuration.text = sdf.format(music.duration)
+            //var albumurl = music.getAlbumUri()
+             //Log.d("앨범Uri:", "${music.getAlbumUri()}")
+            with(binding) {
+                imageAlbum.setImageURI(music.getAlbumUri())
+                texArtist.text = music.artist
+                textTitle.text = music.title
+                val sdf = SimpleDateFormat("mm:ss")
+                textDuration.text = sdf.format(music.duration)
+            }
             this.musicUri = music.getMusicUri()
         }
     }

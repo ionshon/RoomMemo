@@ -2,9 +2,11 @@ package com.inu.roommemo
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -18,6 +20,7 @@ import com.inu.roommemo.DB.RoomMusicDao
 import com.inu.roommemo.adapter.MusicAdapter
 import com.inu.roommemo.data.RoomMusic
 import com.inu.roommemo.databinding.ActivityMainBinding
+import com.inu.roommemo.databinding.ControlsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,10 +28,11 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
+    val binding by lazy { ActivityMainBinding.inflate(layoutInflater)}
+    val bindingControl by lazy { ControlsBinding.inflate(layoutInflater)  }
+
     val permission = Manifest.permission.READ_EXTERNAL_STORAGE
     val REQ_READ = 99
-
-    val binding by lazy { ActivityMainBinding.inflate(layoutInflater)}
 
     val musicLists = mutableListOf<RoomMusic>()
 
@@ -48,7 +52,23 @@ class MainActivity : AppCompatActivity() {
         }else {
             ActivityCompat.requestPermissions(this, arrayOf(permission), REQ_READ)
         }
+
+        bindingControl.buttonPlayPause.setOnClickListener {
+            musicPlay()
+        }
     }
+
+    fun musicPlay() {
+        var mediaPlayer:MediaPlayer? = null
+        if(mediaPlayer != null) {
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+        mediaPlayer = MediaPlayer.create(binding.root.context, R.raw.pop_pop_pop)
+        mediaPlayer?.start()
+
+    }
+
 
     fun startProcess() {
         helper = Room.databaseBuilder(this, RoomMusicHelper::class.java, "room_music")
@@ -57,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         musicDAO = helper.roomMusicDao()
         musicAdapter = MusicAdapter(musicLists)
 
+        binding.progress.visibility = View.VISIBLE
         insertMusicList()
         setTitle("곡수 : $i")
         CoroutineScope(Dispatchers.IO).launch {
@@ -64,16 +85,15 @@ class MainActivity : AppCompatActivity() {
             musicAdapter.musicList.addAll(musicDAO.getAll())
 
             withContext(Dispatchers.Main) { // 화면을 갱신할 때만 메인 쓰레드를 실행해
-            //    musicAdapter.notifyDataSetChanged()
+            //    musicAdapter.notifyDataSetChanged()  // 추가시 사용
                 with(binding) {
                     Log.d("코루틴 빡 : ", "$i")
                     recyclerMemo.adapter = musicAdapter
                     recyclerMemo.layoutManager = LinearLayoutManager(this@MainActivity)
+                    progress.visibility = View.INVISIBLE
                 }
             }
         }
- //       musicAdapter.notifyDataSetChanged()
-
     }
 
     fun insertMusicList() {
@@ -100,7 +120,6 @@ class MainActivity : AppCompatActivity() {
 
             val music = RoomMusic(id, title, artist, albumId, duration)
 
-            Log.d("코루틴 : ", "$music")
             CoroutineScope(Dispatchers.IO).launch {
                 musicDAO.insert(music) // musicList.add(music)
             }
@@ -128,6 +147,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }
 
 
