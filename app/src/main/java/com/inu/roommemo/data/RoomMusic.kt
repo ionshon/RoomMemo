@@ -23,6 +23,8 @@ class RoomMusic { //(id: String, title:String?, artist:String?, albumId:String?,
     var albumId: String?     = ""  // 앨범이미지  id
     @ColumnInfo
     var duration : Long? = 0
+ //   @ColumnInfo
+ //   var genre : String? = ""
 
     /*
     init {
@@ -33,12 +35,13 @@ class RoomMusic { //(id: String, title:String?, artist:String?, albumId:String?,
         this.duration = duration
     } */
 
-    constructor(id: String, title: String, artist: String, albumId: String, duration: Long) {
+    constructor(id: String, title: String, artist: String, albumId: String, duration: Long) { //}, genre: String) {
         this.id = id
         this.title = title
         this.artist =  artist
         this.albumId = albumId
         this.duration = duration
+    //    this.genre = genre
     }
 
     fun getMusicUri(): Uri {

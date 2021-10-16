@@ -24,6 +24,7 @@ class MusicAdapter(val musicList: MutableList<RoomMusic>) : // (private val onCl
     }
 
     override fun getItemCount(): Int {
+        Log.d("음악리스트 사이지: ", "${musicList.size}")
         return musicList.size
     }
 
@@ -53,6 +54,7 @@ class MusicAdapter(val musicList: MutableList<RoomMusic>) : // (private val onCl
                 imageAlbum.setImageURI(music.getAlbumUri())
                 texArtist.text = music.artist
                 textTitle.text = music.title
+        //        textGenre.text = music.genre
                 val sdf = SimpleDateFormat("mm:ss")
                 textDuration.text = sdf.format(music.duration)
             }
