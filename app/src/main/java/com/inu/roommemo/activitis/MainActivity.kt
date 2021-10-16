@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.MediaStore
@@ -119,26 +120,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 2. 가져올 데이터 컬컴 정의
+    val proj = arrayOf(
+        MediaStore.Audio.Media._ID,
+        MediaStore.Audio.Media.TITLE,
+        MediaStore.Audio.Media.ARTIST,
+        MediaStore.Audio.Media.ALBUM_ID,
+        MediaStore.Audio.Media.DURATION
+        //     MediaStore.Audio.Genres._ID,
+        //     MediaStore.Audio.Media.GENRE_ID,
+        //    MediaStore.Audio.Media.GENRE
+    )
     private fun insertMusicList() {
         val musicListUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
     //    val genreUri = android.provider.MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI
-        // 2. 가져올 데이터 컬컴 정의
-        val proj = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.DURATION
-       //     MediaStore.Audio.Genres._ID,
-       //     MediaStore.Audio.Media.GENRE_ID,
-        //    MediaStore.Audio.Media.GENRE
-        )
      //   val genreProj = arrayOf(
        //     MediaStore.Audio.Genres._ID,
          //   MediaStore.Audio.Genres.NAME
        // )
         //3.  컨텐트 리졸버에 해당 데이터 요청
-        val cursor = contentResolver.query(musicListUri, proj, null, null, null)
+     //   val cursor = contentResolver.query(musicListUri, proj, null, null, null)
+        val cursor = makeSongCursor(this)
    //     val cursorGenre = contentResolver.query(genreUri, genreProj, null, null, null)
         // 4. 커서로 전달받은 데이터를 꺼내서 저장
         //    val musicList = mutableListOf<RoomMusic>()
@@ -164,6 +166,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         cursor?.close()
+    }
+    internal fun makeSongCursor(context: Context): Cursor? {
+        try {
+            return context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                proj, null, null, null)
+        } catch (e: SecurityException) {
+            return null
+        }
+
     }
 
 
