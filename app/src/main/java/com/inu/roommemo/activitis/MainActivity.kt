@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     private val mConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, iBinder: IBinder?) {
             isService = true
-            val binder = iBinder as MusicService.LocalBinder
+            val binder = iBinder as MusicService.MyBinder
             mService = binder.instance
         }
 
