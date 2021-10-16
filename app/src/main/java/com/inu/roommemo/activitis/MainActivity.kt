@@ -96,8 +96,6 @@ class MainActivity : AppCompatActivity() {
         musicDAO = helper.roomMusicDao()
         musicAdapter = MusicAdapter(musicLists)
 
-        binding.recyclerMemo.setHasFixedSize(true) // 이거 없으면 에러
-        // => E/RecyclerView: No adapter attached; skipping layout
         binding.progress.visibility = View.VISIBLE
         insertMusicList()
         title = "곡수 : $i"
@@ -110,6 +108,10 @@ class MainActivity : AppCompatActivity() {
                 with(binding) {
                     Log.d("코루틴 빡 : ", "$i")
                     recyclerMemo.layoutManager = LinearLayoutManager(this@MainActivity)
+
+                    binding.recyclerMemo.setHasFixedSize(true) // 이거 없으면 에러
+                    // => E/RecyclerView: No adapter attached; skipping layout
+
                     recyclerMemo.adapter = musicAdapter
                     progress.visibility = View.INVISIBLE
                 }
